@@ -256,6 +256,23 @@ body {
   margin-bottom: 12px;
 }
 
+.info-note {
+  font-size: 0.82rem;
+  color: var(--text-light);
+  line-height: 1.7;
+}
+
+.info-note p + p {
+  margin-top: 3px;
+}
+
+.field-note {
+  font-size: 0.78rem;
+  color: var(--text-light);
+  line-height: 1.6;
+  margin-bottom: 8px;
+}
+
 /* ===== Submit Button ===== */
 .btn-submit {
   width: 100%;
@@ -354,12 +371,13 @@ body {
 
 .summary-qty {
   display: flex;
+  flex-wrap: wrap;
   gap: 16px;
   padding: 12px 0;
 }
 
 .qty-badge {
-  flex: 1;
+  flex: 1 1 calc(50% - 8px);
   background: var(--mango-light);
   border: 1px solid var(--mango-border);
   border-radius: 10px;
@@ -382,6 +400,43 @@ body {
 .qty-badge .qty-unit {
   font-size: 0.78rem;
   color: var(--text-light);
+}
+
+.amount-box {
+  margin-top: 6px;
+  border-top: 1px solid #F0F0F0;
+  padding-top: 8px;
+}
+
+.amount-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 10px;
+  padding: 6px 0;
+  font-size: 0.86rem;
+}
+
+.amount-label {
+  color: var(--text-light);
+}
+
+.amount-value {
+  color: var(--text);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.amount-total {
+  border-top: 1px dashed var(--mango-border);
+  margin-top: 4px;
+  padding-top: 8px;
+}
+
+.amount-total .amount-label,
+.amount-total .amount-value {
+  color: var(--mango-dark);
+  font-weight: 700;
 }
 
 /* ===== Success Page ===== */

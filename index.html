@@ -31,6 +31,30 @@
 
   <div class="container">
 
+    <div class="card">
+      <div class="card-title">📌 訂購需知</div>
+      <div class="info-note">
+        <p>芒果姊姊果園訂購需知</p>
+        <p>產品資訊</p>
+        <p>愛文芒果，經環虹琨騰認證公司檢驗合格，具產銷履歷，安心食用。</p>
+        <p>預購與出貨</p>
+        <p>目前為 預購制，依下單順序安排出貨。</p>
+        <p>因產量有限，無法保證出貨日期，請下單前酌情考慮。</p>
+        <p>訂購 20A、NG 規格者，因數量較少，需耐心等候。</p>
+        <p>出貨後會通知訂購者。</p>
+        <p>如遇不可抗力因素，導致無法如期出貨，將通知並取消訂單。</p>
+        <p>運費說明</p>
+        <p>臺灣本島：免運。</p>
+        <p>外島：每箱加收運費 180 元。</p>
+        <p>配送規範</p>
+        <p>無法指定到貨日期及時間，依物流狀況為主。</p>
+        <p>週日固定不配送。</p>
+        <p>如有特殊需求，請於備註欄註明。</p>
+        <p>到貨與售後</p>
+        <p>芒果到貨後如有損傷，請先拍照並 立即聯絡我們。</p>
+      </div>
+    </div>
+
     <div class="notice">
       📦 訂單送出後將由黑貓宅急便配送，請確認收件地址正確
     </div>
@@ -84,6 +108,11 @@
 
         <div class="field">
           <label>收件地址 <span class="required">*</span></label>
+          <div class="field-note">
+            <p>請填選正確地址。</p>
+            <p>收貨地址若為公司行號請特別註明，僅於平日配送。</p>
+            <p>如未填寫正確地址或特別註明，導致貨品寄出無人可收，怒不負責</p>
+          </div>
           <div class="address-row">
             <select id="recipientCounty" required>
               <option value="">請選擇縣市</option>
@@ -103,17 +132,33 @@
       <!-- 訂購數量 -->
       <div class="card">
         <div class="card-title">🥭 訂購數量</div>
+        <div class="field-note">芒果品項,每箱實重10斤,單品項訂購上限20箱</div>
 
         <div class="qty-grid">
           <div class="qty-field">
-            <label for="qty12A">芒果 12A</label>
-            <input type="number" id="qty12A" value="0" min="0" max="99" inputmode="numeric">
+            <label for="qty12A">芒果 12A-1000元/箱</label>
+            <input type="number" id="qty12A" value="0" min="0" max="20" inputmode="numeric">
             <div class="qty-hint">箱</div>
             <div class="error-msg" id="qty12A-err"></div>
           </div>
           <div class="qty-field">
-            <label for="qty20A">芒果 20A</label>
-            <input type="number" id="qty20A" value="0" min="0" max="99" inputmode="numeric">
+            <label for="qty20A">芒果 20A-1150元/箱</label>
+            <input type="number" id="qty20A" value="0" min="0" max="20" inputmode="numeric">
+            <div class="qty-hint">箱</div>
+          </div>
+          <div class="qty-field">
+            <label for="qty18A">18A-800元/箱</label>
+            <input type="number" id="qty18A" value="0" min="0" max="20" inputmode="numeric">
+            <div class="qty-hint">箱</div>
+          </div>
+          <div class="qty-field">
+            <label for="qty20B">20A-700元/箱</label>
+            <input type="number" id="qty20B" value="0" min="0" max="20" inputmode="numeric">
+            <div class="qty-hint">箱</div>
+          </div>
+          <div class="qty-field">
+            <label for="qtyNG">NG-600元/箱</label>
+            <input type="number" id="qtyNG" value="0" min="0" max="20" inputmode="numeric">
             <div class="qty-hint">箱</div>
           </div>
         </div>

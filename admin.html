@@ -46,7 +46,7 @@
     /* ===== Stats ===== */
     .stats-row {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(4, 1fr);
       gap: 10px;
       padding: 14px 16px;
     }
@@ -237,6 +237,10 @@
       .toolbar { padding: 0 20px 12px; }
       .table-wrap { padding: 0 20px 80px; }
     }
+
+    @media (max-width: 767px) {
+      .stats-row { grid-template-columns: repeat(2, 1fr); }
+    }
   </style>
 </head>
 <body>
@@ -256,12 +260,16 @@
       <div class="stat-label">總訂單數</div>
     </div>
     <div class="stat-card">
-      <div class="stat-num" id="stat-12a">—</div>
-      <div class="stat-label">12A 總箱數</div>
+      <div class="stat-num" id="stat-boxes">—</div>
+      <div class="stat-label">總箱數</div>
     </div>
     <div class="stat-card">
-      <div class="stat-num" id="stat-20a">—</div>
-      <div class="stat-label">20A 總箱數</div>
+      <div class="stat-num" id="stat-amount">—</div>
+      <div class="stat-label">總金額（元）</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" id="stat-ng">—</div>
+      <div class="stat-label">NG 總箱數</div>
     </div>
   </div>
 
@@ -285,6 +293,13 @@
   <script>
     const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzoTvbFiqTpkzjFkoKpeTP3KYpZcE_HeLS3CPHrhrpS0PP5tcutDXjp1X_L84XWAvBu/exec';
     let allOrders = [];
+    const PRODUCT_ITEMS = [
+      { key: 'qty12A', label: '12A', csvName: '芒果12A' },
+      { key: 'qty20A', label: '20A(1150)', csvName: '芒果20A-1150' },
+      { key: 'qty18A', label: '18A', csvName: '芒果18A' },
+      { key: 'qty20B', label: '20A(700)', csvName: '芒果20A-700' },
+      { key: 'qtyNG', label: 'NG', csvName: '芒果NG' }
+    ];
 
     // 頁面一開就自動載入
     window.addEventListener('DOMContentLoaded', () => {
@@ -325,10 +340,13 @@
 
     function updateStats() {
       document.getElementById('stat-total').textContent = allOrders.length;
-      document.getElementById('stat-12a').textContent =
-        allOrders.reduce((s, o) => s + Number(o.qty12A || 0), 0);
-      document.getElementById('stat-20a').textContent =
-        allOrders.reduce((s, o) => s + Number(o.qty20A || 0), 0);
+      document.getElementById('stat-boxes').textContent =
+        allOrders.reduce((s, o) =>
+          s + Number(o.qty12A || 0) + Number(o.qty20A || 0) + Number(o.qty18A || 0) + Number(o.qty20B || 0) + Number(o.qtyNG || 0), 0);
+      document.getElementById('stat-amount').textContent =
+        allOrders.reduce((s, o) => s + Number(o.totalAmount || 0), 0).toLocaleString('zh-TW');
+      document.getElementById('stat-ng').textContent =
+        allOrders.reduce((s, o) => s + Number(o.qtyNG || 0), 0);
     }
 
     function renderTable() {
@@ -353,9 +371,12 @@
           <td>${o.recipientPhone}</td>
           <td style="max-width:180px;word-break:break-all">${o.recipientAddress}</td>
           <td>
-            ${o.qty12A > 0 ? `<span class="qty-badge">12A×${o.qty12A}</span>` : ''}
-            ${o.qty20A > 0 ? `<span class="qty-badge">20A×${o.qty20A}</span>` : ''}
+            ${(PRODUCT_ITEMS
+              .filter(item => Number(o[item.key] || 0) > 0)
+              .map(item => `<span class="qty-badge">${item.label}×${o[item.key]}</span>`)
+              .join('')) || '—'}
           </td>
+          <td>${Number(o.totalAmount || 0).toLocaleString('zh-TW')}</td>
           <td>${o.notes || '—'}</td>
           <td>
             <span class="status-badge ${o.status === '已出貨' ? 'done' : 'pending'}">
@@ -375,6 +396,7 @@
               <th>電話</th>
               <th>地址</th>
               <th>數量</th>
+              <th>金額</th>
               <th>備註</th>
               <th>狀態</th>
             </tr>
@@ -391,14 +413,13 @@
       const csvRows = [headers.join(',')];
 
       allOrders.forEach(o => {
-        if (Number(o.qty12A) > 0) {
-          csvRows.push([o.recipientName, o.recipientPhone, o.recipientAddress,
-            '芒果12A', o.qty12A, o.notes || '', o.orderId].map(csvEscape).join(','));
-        }
-        if (Number(o.qty20A) > 0) {
-          csvRows.push([o.recipientName, o.recipientPhone, o.recipientAddress,
-            '芒果20A', o.qty20A, o.notes || '', o.orderId].map(csvEscape).join(','));
-        }
+        PRODUCT_ITEMS.forEach(item => {
+          const qty = Number(o[item.key] || 0);
+          if (qty > 0) {
+            csvRows.push([o.recipientName, o.recipientPhone, o.recipientAddress,
+              item.csvName, qty, o.notes || '', o.orderId].map(csvEscape).join(','));
+          }
+        });
       });
 
       const blob = new Blob(['\uFEFF' + csvRows.join('\n')], { type: 'text/csv;charset=utf-8;' });

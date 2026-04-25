@@ -4,6 +4,14 @@ const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzoTvbFiqTpkzjF
 // ===== 工具函式 =====
 
 function $(id) { return document.getElementById(id); }
+const QTY_FIELDS = ['qty12A', 'qty20A', 'qty18A', 'qty20B', 'qtyNG'];
+const PRODUCT_CONFIG = [
+  { key: 'qty12A', name: '芒果 12A', price: 1000 },
+  { key: 'qty20A', name: '芒果 20A', price: 1150 },
+  { key: 'qty18A', name: '18A', price: 800 },
+  { key: 'qty20B', name: '20A', price: 700 },
+  { key: 'qtyNG', name: 'NG', price: 600 }
+];
 
 function showError(fieldId, msg) {
   const input = $(fieldId);
@@ -62,7 +70,7 @@ function initFormPage() {
   const saved = sessionStorage.getItem('orderData');
   if (saved) {
     const data = JSON.parse(saved);
-    const fields = ['buyerName','buyerPhone','recipientName','recipientPhone','qty12A','qty20A','notes'];
+    const fields = ['buyerName','buyerPhone','recipientName','recipientPhone', ...QTY_FIELDS, 'notes'];
     fields.forEach(key => {
       const el = $(key);
       if (el && data[key] !== undefined) el.value = data[key];
@@ -148,12 +156,18 @@ function validateForm() {
   }
 
   // 至少選一種芒果
-  const qty12A = Number($('qty12A').value) || 0;
-  const qty20A = Number($('qty20A').value) || 0;
-  if (qty12A === 0 && qty20A === 0) {
+  const qtyValues = QTY_FIELDS.map(id => Number($(id).value) || 0);
+  const hasOrder = qtyValues.some(value => value > 0);
+  if (!hasOrder) {
     showError('qty12A', '請至少訂購一種芒果');
     valid = false;
   } else clearError('qty12A');
+
+  const overLimit = qtyValues.some(value => value > 20);
+  if (overLimit) {
+    showError('qty12A', '每個品項單次最多 20 箱');
+    valid = false;
+  }
 
   if (!valid) {
     // 捲動到第一個錯誤欄位
@@ -181,6 +195,9 @@ function collectFormData() {
     recipientDetail: detail,
     qty12A: Number($('qty12A').value) || 0,
     qty20A: Number($('qty20A').value) || 0,
+    qty18A: Number($('qty18A').value) || 0,
+    qty20B: Number($('qty20B').value) || 0,
+    qtyNG: Number($('qtyNG').value) || 0,
     notes: $('notes').value.trim()
   };
 }
@@ -227,6 +244,39 @@ function renderSummary(data) {
   $('summary-info').innerHTML = infoHTML;
   $('qty12A-display').textContent = data.qty12A;
   $('qty20A-display').textContent = data.qty20A;
+  $('qty18A-display').textContent = data.qty18A || 0;
+  $('qty20B-display').textContent = data.qty20B || 0;
+  $('qtyNG-display').textContent = data.qtyNG || 0;
+
+  renderAmountSummary(data);
+}
+
+function renderAmountSummary(data) {
+  const container = $('summary-amount');
+  if (!container) return;
+
+  let total = 0;
+  const rows = PRODUCT_CONFIG.map(product => {
+    const qty = Number(data[product.key]) || 0;
+    const subtotal = qty * product.price;
+    total += subtotal;
+    return `
+      <div class="amount-row">
+        <span class="amount-label">${product.name}（${qty}箱 × ${product.price.toLocaleString()} 元）</span>
+        <span class="amount-value">${subtotal.toLocaleString()} 元</span>
+      </div>
+    `;
+  }).join('');
+
+  container.innerHTML = `
+    <div class="amount-box">
+      ${rows}
+      <div class="amount-row amount-total">
+        <span class="amount-label">總金額</span>
+        <span class="amount-value">${total.toLocaleString()} 元</span>
+      </div>
+    </div>
+  `;
 }
 
 async function submitOrder(data) {
