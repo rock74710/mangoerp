@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>芒果訂購表單</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body data-page="form">
+
+  <div class="header">
+    <h1>🥭 芒果訂購表單</h1>
+    <div class="subtitle">2026 產季預購</div>
+    <div class="steps">
+      <div class="step active">
+        <div class="step-num">1</div>
+        填寫資料
+      </div>
+      <div class="step-arrow">›</div>
+      <div class="step">
+        <div class="step-num">2</div>
+        確認訂單
+      </div>
+      <div class="step-arrow">›</div>
+      <div class="step">
+        <div class="step-num">3</div>
+        完成送出
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+
+    <div class="notice">
+      📦 訂單送出後將由黑貓宅急便配送，請確認收件地址正確
+    </div>
+
+    <form id="order-form" novalidate>
+
+      <!-- 訂購人資料 -->
+      <div class="card">
+        <div class="card-title">👤 訂購人資料</div>
+
+        <div class="field">
+          <label for="buyerName">
+            訂購人姓名
+            <span class="optional">（選填）</span>
+          </label>
+          <input type="text" id="buyerName" placeholder="請輸入姓名" autocomplete="name">
+        </div>
+
+        <div class="field">
+          <label for="buyerPhone">
+            訂購人電話
+            <span class="optional">（選填）</span>
+          </label>
+          <input type="tel" id="buyerPhone" placeholder="例：0912345678" autocomplete="tel" inputmode="tel">
+          <div class="error-msg" id="buyerPhone-err"></div>
+        </div>
+      </div>
+
+      <!-- 收件人資料 -->
+      <div class="card">
+        <div class="card-title">📮 收件人資料</div>
+
+        <div class="field">
+          <label for="recipientName">
+            收件人姓名
+            <span class="required">*</span>
+          </label>
+          <input type="text" id="recipientName" placeholder="請輸入姓名" autocomplete="shipping name" required>
+          <div class="error-msg" id="recipientName-err"></div>
+        </div>
+
+        <div class="field">
+          <label for="recipientPhone">
+            收件人電話
+            <span class="required">*</span>
+          </label>
+          <input type="tel" id="recipientPhone" placeholder="例：0912345678" autocomplete="shipping tel" inputmode="tel" required>
+          <div class="error-msg" id="recipientPhone-err"></div>
+        </div>
+
+        <div class="field">
+          <label for="recipientAddress">
+            收件地址
+            <span class="required">*</span>
+          </label>
+          <input type="text" id="recipientAddress" placeholder="請輸入完整地址（含縣市）" autocomplete="shipping street-address" required>
+          <div class="error-msg" id="recipientAddress-err"></div>
+        </div>
+      </div>
+
+      <!-- 訂購數量 -->
+      <div class="card">
+        <div class="card-title">🥭 訂購數量</div>
+
+        <div class="qty-grid">
+          <div class="qty-field">
+            <label for="qty12A">芒果 12A</label>
+            <input type="number" id="qty12A" value="0" min="0" max="99" inputmode="numeric">
+            <div class="qty-hint">箱</div>
+            <div class="error-msg" id="qty12A-err"></div>
+          </div>
+          <div class="qty-field">
+            <label for="qty20A">芒果 20A</label>
+            <input type="number" id="qty20A" value="0" min="0" max="99" inputmode="numeric">
+            <div class="qty-hint">箱</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 備註 -->
+      <div class="card">
+        <div class="card-title">📝 備註</div>
+        <div class="field">
+          <textarea id="notes" placeholder="有任何特殊需求請填寫（選填）"></textarea>
+        </div>
+      </div>
+
+      <button type="submit" class="btn-submit">
+        <span class="btn-text">下一步：確認訂單</span>
+        <span class="spinner"></span>
+      </button>
+
+    </form>
+  </div>
+
+  <script src="js/main.js"></script>
+</body>
+</html>

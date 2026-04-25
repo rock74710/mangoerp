@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>確認訂單 - 芒果訂購</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body data-page="confirm">
+
+  <div class="header">
+    <h1>🥭 芒果訂購表單</h1>
+    <div class="subtitle">2026 產季預購</div>
+    <div class="steps">
+      <div class="step done">
+        <div class="step-num">✓</div>
+        填寫資料
+      </div>
+      <div class="step-arrow">›</div>
+      <div class="step active">
+        <div class="step-num">2</div>
+        確認訂單
+      </div>
+      <div class="step-arrow">›</div>
+      <div class="step">
+        <div class="step-num">3</div>
+        完成送出
+      </div>
+    </div>
+  </div>
+
+  <div class="container" id="summary-container">
+
+    <!-- 數量摘要 -->
+    <div class="card">
+      <div class="card-title">🥭 訂購數量</div>
+      <div class="summary-qty">
+        <div class="qty-badge">
+          <div class="qty-type">芒果 12A</div>
+          <div class="qty-num" id="qty12A-display">0</div>
+          <div class="qty-unit">箱</div>
+        </div>
+        <div class="qty-badge">
+          <div class="qty-type">芒果 20A</div>
+          <div class="qty-num" id="qty20A-display">0</div>
+          <div class="qty-unit">箱</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 收件人資訊 -->
+    <div class="card">
+      <div class="card-title">📋 訂單資訊</div>
+      <div id="summary-info"></div>
+    </div>
+
+    <div class="notice">
+      ⚠️ 請確認以上資訊正確，送出後將無法修改
+    </div>
+
+    <div class="alert-error" id="alert-error"></div>
+
+    <button class="btn-submit" id="btn-confirm">
+      <span class="btn-text">確認送出訂單</span>
+      <span class="spinner"></span>
+    </button>
+
+    <button class="btn-back" id="btn-back">← 返回修改</button>
+
+  </div>
+
+  <script src="js/main.js"></script>
+</body>
+</html>

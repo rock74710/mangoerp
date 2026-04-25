@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>後台管理 - 芒果 ERP</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --mango: #F5A623;
+      --mango-dark: #D4881A;
+      --mango-light: #FFF8EC;
+      --text: #333;
+      --text-light: #666;
+      --border: #E2E8F0;
+      --bg: #F7F7F7;
+      --white: #fff;
+      --error: #E53E3E;
+      --success: #38A169;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Noto Sans TC", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    /* ===== Header ===== */
+    .header {
+      background: var(--mango);
+      color: white;
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 8px rgba(245,166,35,0.4);
+    }
+
+    .header h1 { font-size: 1.1rem; font-weight: 700; }
+    .header .header-right { display: flex; gap: 8px; align-items: center; }
+
+    /* ===== Stats ===== */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      padding: 14px 16px;
+    }
+
+    .stat-card {
+      background: var(--white);
+      border-radius: 10px;
+      padding: 12px 14px;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+      text-align: center;
+    }
+
+    .stat-num {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--mango-dark);
+      line-height: 1.2;
+    }
+
+    .stat-label { font-size: 0.72rem; color: var(--text-light); margin-top: 2px; }
+
+    /* ===== Toolbar ===== */
+    .toolbar {
+      padding: 0 16px 10px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .search-input {
+      flex: 1;
+      min-width: 160px;
+      padding: 8px 12px;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.88rem;
+    }
+
+    .search-input:focus { outline: none; border-color: var(--mango); }
+
+    .btn-sm {
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1.5px solid var(--border);
+      background: var(--white);
+      color: var(--text-light);
+      white-space: nowrap;
+    }
+
+    .btn-sm.primary {
+      background: var(--mango);
+      border-color: var(--mango);
+      color: white;
+    }
+
+    .btn-sm:active { opacity: 0.8; }
+
+    /* ===== Table ===== */
+    .table-wrap {
+      padding: 0 16px 80px;
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--white);
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+      font-size: 0.83rem;
+      min-width: 700px;
+    }
+
+    thead th {
+      background: #2D3748;
+      color: #E2E8F0;
+      padding: 10px 12px;
+      text-align: left;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    tbody tr {
+      border-bottom: 1px solid var(--border);
+      transition: background 0.1s;
+    }
+
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: var(--mango-light); }
+
+    tbody td {
+      padding: 10px 12px;
+      vertical-align: middle;
+    }
+
+    .order-id {
+      font-family: monospace;
+      font-size: 0.78rem;
+      color: var(--text-light);
+    }
+
+    .qty-badge {
+      display: inline-block;
+      background: var(--mango-light);
+      border: 1px solid #FDD07A;
+      border-radius: 12px;
+      padding: 2px 8px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--mango-dark);
+      margin-right: 3px;
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .status-badge.pending { background: #FEFCBF; color: #744210; }
+    .status-badge.done { background: #C6F6D5; color: #22543D; }
+
+    /* ===== Empty / Loading ===== */
+    .empty {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--text-light);
+      font-size: 0.9rem;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 30px;
+      color: var(--text-light);
+    }
+
+    .spinner-lg {
+      width: 30px;
+      height: 30px;
+      border: 3px solid var(--border);
+      border-top-color: var(--mango);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      margin: 0 auto 10px;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .error-msg {
+      background: #FFF5F5;
+      border: 1px solid #FED7D7;
+      border-radius: 8px;
+      padding: 12px 16px;
+      color: var(--error);
+      font-size: 0.85rem;
+      margin: 0 16px;
+    }
+
+    /* ===== Floating refresh ===== */
+    .fab {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: var(--mango);
+      color: white;
+      border: none;
+      font-size: 1.3rem;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(245,166,35,0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* ===== Responsive ===== */
+    @media (min-width: 768px) {
+      .stats-row { padding: 16px 20px; }
+      .toolbar { padding: 0 20px 12px; }
+      .table-wrap { padding: 0 20px 80px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <h1>🥭 芒果 ERP 後台</h1>
+    <div class="header-right">
+      <span id="last-update" style="font-size:0.75rem;opacity:0.8"></span>
+    </div>
+  </div>
+
+
+  <!-- 統計 -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-num" id="stat-total">—</div>
+      <div class="stat-label">總訂單數</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" id="stat-12a">—</div>
+      <div class="stat-label">12A 總箱數</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" id="stat-20a">—</div>
+      <div class="stat-label">20A 總箱數</div>
+    </div>
+  </div>
+
+  <!-- 工具列 -->
+  <div class="toolbar">
+    <input class="search-input" id="search" placeholder="搜尋姓名、電話、地址…" oninput="renderTable()">
+    <button class="btn-sm primary" onclick="exportCsv()">⬇ 匯出黑貓 CSV</button>
+    <button class="btn-sm" onclick="loadOrders()">🔄 重新整理</button>
+  </div>
+
+  <!-- 訂單表格 -->
+  <div class="table-wrap">
+    <div id="table-container">
+      <div class="empty">請先輸入 Apps Script URL 並點選「載入訂單」</div>
+    </div>
+  </div>
+
+  <!-- 浮動重新整理按鈕 -->
+  <button class="fab" onclick="loadOrders()" title="重新整理">🔄</button>
+
+  <script>
+    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzoTvbFiqTpkzjFkoKpeTP3KYpZcE_HeLS3CPHrhrpS0PP5tcutDXjp1X_L84XWAvBu/exec';
+    let allOrders = [];
+
+    // 頁面一開就自動載入
+    window.addEventListener('DOMContentLoaded', () => {
+      loadOrders();
+    });
+
+    function getApiUrl() {
+      return APPS_SCRIPT_URL;
+    }
+
+    async function loadOrders() {
+      const url = getApiUrl();
+      if (!url) return;
+
+      const container = document.getElementById('table-container');
+      container.innerHTML = `
+        <div class="loading">
+          <div class="spinner-lg"></div>
+          載入中…
+        </div>`;
+
+      try {
+        const res = await fetch(url + '?action=list');
+        const json = await res.json();
+        allOrders = json.orders || [];
+        updateStats();
+        renderTable();
+        document.getElementById('last-update').textContent =
+          '更新：' + new Date().toLocaleTimeString('zh-TW');
+      } catch (err) {
+        container.innerHTML = `
+          <div class="error-msg">
+            ❌ 載入失敗：${err.message}<br>
+            請確認 Apps Script URL 正確，且部署為「任何人可存取」
+          </div>`;
+      }
+    }
+
+    function updateStats() {
+      document.getElementById('stat-total').textContent = allOrders.length;
+      document.getElementById('stat-12a').textContent =
+        allOrders.reduce((s, o) => s + Number(o.qty12A || 0), 0);
+      document.getElementById('stat-20a').textContent =
+        allOrders.reduce((s, o) => s + Number(o.qty20A || 0), 0);
+    }
+
+    function renderTable() {
+      const keyword = document.getElementById('search').value.toLowerCase();
+      const filtered = keyword
+        ? allOrders.filter(o =>
+            [o.buyerName, o.recipientName, o.recipientPhone, o.buyerPhone, o.recipientAddress]
+              .some(v => (v || '').toLowerCase().includes(keyword)))
+        : allOrders;
+
+      if (filtered.length === 0) {
+        document.getElementById('table-container').innerHTML =
+          `<div class="empty">${keyword ? '找不到符合的訂單' : '目前沒有訂單'}</div>`;
+        return;
+      }
+
+      const rows = filtered.map(o => `
+        <tr>
+          <td class="order-id">${o.orderId}</td>
+          <td>${o.timestamp}</td>
+          <td>${o.recipientName}</td>
+          <td>${o.recipientPhone}</td>
+          <td style="max-width:180px;word-break:break-all">${o.recipientAddress}</td>
+          <td>
+            ${o.qty12A > 0 ? `<span class="qty-badge">12A×${o.qty12A}</span>` : ''}
+            ${o.qty20A > 0 ? `<span class="qty-badge">20A×${o.qty20A}</span>` : ''}
+          </td>
+          <td>${o.notes || '—'}</td>
+          <td>
+            <span class="status-badge ${o.status === '已出貨' ? 'done' : 'pending'}">
+              ${o.status || '待處理'}
+            </span>
+          </td>
+        </tr>
+      `).join('');
+
+      document.getElementById('table-container').innerHTML = `
+        <table>
+          <thead>
+            <tr>
+              <th>訂單編號</th>
+              <th>時間</th>
+              <th>收件人</th>
+              <th>電話</th>
+              <th>地址</th>
+              <th>數量</th>
+              <th>備註</th>
+              <th>狀態</th>
+            </tr>
+          </thead>
+          <tbody>${rows}</tbody>
+        </table>`;
+    }
+
+    // 匯出黑貓宅急便 CSV
+    function exportCsv() {
+      if (allOrders.length === 0) { alert('沒有訂單可匯出'); return; }
+
+      const headers = ['收件人', '收件人電話', '收件人地址', '品名', '數量', '備註', '訂單編號'];
+      const csvRows = [headers.join(',')];
+
+      allOrders.forEach(o => {
+        if (Number(o.qty12A) > 0) {
+          csvRows.push([o.recipientName, o.recipientPhone, o.recipientAddress,
+            '芒果12A', o.qty12A, o.notes || '', o.orderId].map(csvEscape).join(','));
+        }
+        if (Number(o.qty20A) > 0) {
+          csvRows.push([o.recipientName, o.recipientPhone, o.recipientAddress,
+            '芒果20A', o.qty20A, o.notes || '', o.orderId].map(csvEscape).join(','));
+        }
+      });
+
+      const blob = new Blob(['\uFEFF' + csvRows.join('\n')], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `黑貓格式_${new Date().toLocaleDateString('zh-TW').replace(/\//g,'-')}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function csvEscape(val) {
+      const s = String(val ?? '');
+      return s.includes(',') || s.includes('"') || s.includes('\n')
+        ? `"${s.replace(/"/g, '""')}"` : s;
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>訂單完成 - 芒果訂購</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body data-page="success">
+
+  <div class="header">
+    <h1>🥭 芒果訂購表單</h1>
+    <div class="subtitle">2026 產季預購</div>
+    <div class="steps">
+      <div class="step done">
+        <div class="step-num">✓</div>
+        填寫資料
+      </div>
+      <div class="step-arrow">›</div>
+      <div class="step done">
+        <div class="step-num">✓</div>
+        確認訂單
+      </div>
+      <div class="step-arrow">›</div>
+      <div class="step active">
+        <div class="step-num">3</div>
+        完成送出
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="card" style="text-align: center; padding: 28px 20px;">
+
+      <div class="success-icon">✅</div>
+
+      <h2 style="font-size: 1.2rem; margin-bottom: 6px;">訂單已送出！</h2>
+      <p style="font-size: 0.85rem; color: #666; margin-bottom: 16px;">感謝您的訂購，我們會盡快處理</p>
+
+      <div class="order-id-box">
+        <div class="order-id-label">您的訂單編號</div>
+        <div class="order-id-value" id="order-id-value">—</div>
+      </div>
+
+      <p class="success-tips">
+        請截圖保存此頁面<br>
+        配送相關問題請洽黑貓宅急便客服<br>
+        或聯繫我們的客服人員
+      </p>
+
+      <button class="btn-new-order" id="btn-new-order">再填一筆訂單</button>
+    </div>
+  </div>
+
+  <script src="js/main.js"></script>
+</body>
+</html>
