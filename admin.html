@@ -275,7 +275,7 @@
 
   <!-- 工具列 -->
   <div class="toolbar">
-    <input class="search-input" id="search" placeholder="搜尋姓名、電話、地址…" oninput="renderTable()">
+    <input class="search-input" id="search" placeholder="搜尋姓名、手機、地址…" oninput="renderTable()">
     <button class="btn-sm primary" onclick="exportCsv()">⬇ 匯出黑貓 CSV</button>
     <button class="btn-sm" onclick="loadOrders()">🔄 重新整理</button>
   </div>
@@ -295,9 +295,9 @@
     let allOrders = [];
     const PRODUCT_ITEMS = [
       { key: 'qty12A', label: '12A', csvName: '芒果12A' },
-      { key: 'qty20A', label: '20A(1150)', csvName: '芒果20A-1150' },
+      { key: 'qty15A', label: '15A', csvName: '芒果15A' },
       { key: 'qty18A', label: '18A', csvName: '芒果18A' },
-      { key: 'qty20B', label: '20A(700)', csvName: '芒果20A-700' },
+      { key: 'qty20A', label: '20A', csvName: '芒果20A' },
       { key: 'qtyNG', label: 'NG', csvName: '芒果NG' }
     ];
 
@@ -342,7 +342,7 @@
       document.getElementById('stat-total').textContent = allOrders.length;
       document.getElementById('stat-boxes').textContent =
         allOrders.reduce((s, o) =>
-          s + Number(o.qty12A || 0) + Number(o.qty20A || 0) + Number(o.qty18A || 0) + Number(o.qty20B || 0) + Number(o.qtyNG || 0), 0);
+          s + Number(o.qty12A || 0) + Number(o.qty15A || 0) + Number(o.qty18A || 0) + Number(o.qty20A || 0) + Number(o.qtyNG || 0), 0);
       document.getElementById('stat-amount').textContent =
         allOrders.reduce((s, o) => s + Number(o.totalAmount || 0), 0).toLocaleString('zh-TW');
       document.getElementById('stat-ng').textContent =
@@ -393,7 +393,7 @@
               <th>訂單編號</th>
               <th>時間</th>
               <th>收件人</th>
-              <th>電話</th>
+              <th>手機</th>
               <th>地址</th>
               <th>數量</th>
               <th>金額</th>
@@ -409,7 +409,7 @@
     function exportCsv() {
       if (allOrders.length === 0) { alert('沒有訂單可匯出'); return; }
 
-      const headers = ['收件人', '收件人電話', '收件人地址', '品名', '數量', '備註', '訂單編號'];
+      const headers = ['收件人', '收件人手機', '收件人地址', '品名', '數量', '備註', '訂單編號'];
       const csvRows = [headers.join(',')];
 
       allOrders.forEach(o => {

@@ -3,16 +3,16 @@ const SHEET_ID = 'YOUR_GOOGLE_SHEET_ID'; // ← 替換成你的 Google Sheets ID
 const ORDER_SHEET = '訂單資料';
 const TCAT_SHEET = '黑貓格式';
 const PRODUCT_ITEMS = [
-  { key: 'qty12A', name: '芒果 12A', price: 1000 },
-  { key: 'qty20A', name: '芒果 20A', price: 1150 },
-  { key: 'qty18A', name: '18A', price: 800 },
-  { key: 'qty20B', name: '20A', price: 700 },
-  { key: 'qtyNG', name: 'NG', price: 600 }
+  { key: 'qty12A', name: '12A', price: 1200 },
+  { key: 'qty15A', name: '15A', price: 1050 },
+  { key: 'qty18A', name: '18A', price: 950 },
+  { key: 'qty20A', name: '20A', price: 850 },
+  { key: 'qtyNG', name: 'NG', price: 700 }
 ];
 const ORDER_HEADERS = [
-  '訂單編號', '時間戳', '訂購人姓名', '訂購人電話',
-  '收件人姓名', '收件人電話', '收件人地址',
-  '12A數量', '20A數量', '18A數量', '20A(700)數量', 'NG數量',
+  '訂單編號', '時間戳', '訂購人姓名', '訂購人手機',
+  '收件人姓名', '收件人手機', '收件人地址',
+  '12A數量', '15A數量', '18A數量', '20A數量', 'NG數量',
   '總金額', '備註', '狀態'
 ];
 
@@ -38,7 +38,7 @@ function setup() {
 
   // 黑貓宅急便批次匯入標頭（依統一速達官方格式）
   const tcatHeaders = [
-    '收件人', '收件人電話', '收件人地址', '品名', '數量', '寄件人備註', '訂單編號'
+    '收件人', '收件人手機', '收件人地址', '品名', '數量', '寄件人備註', '訂單編號'
   ];
   tcatSheet.getRange(1, 1, 1, tcatHeaders.length).setValues([tcatHeaders]);
 
@@ -73,9 +73,9 @@ function ensureOrderSheetSchema(orderSheet) {
   orderSheet.setColumnWidth(7, 250);   // 收件地址
   orderSheet.setColumnWidth(13, 120);  // 總金額
 
-  // 設定電話欄位為純文字，防止首位 0 被去掉
-  orderSheet.getRange('D:D').setNumberFormat('@'); // 訂購人電話
-  orderSheet.getRange('F:F').setNumberFormat('@'); // 收件人電話
+  // 設定手機欄位為純文字，防止首位 0 被去掉
+  orderSheet.getRange('D:D').setNumberFormat('@'); // 訂購人手機
+  orderSheet.getRange('F:F').setNumberFormat('@'); // 收件人手機
 }
 
 // ===== 重新整理黑貓格式 Sheet（手動觸發）=====
@@ -197,15 +197,15 @@ function writeOrder(orderId, timestamp, data) {
   ensureOrderSheetSchema(sheet);
 
   // 必須在 appendRow 之前設定，否則數字會先被寫入再格式化（首位 0 已丟失）
-  sheet.getRange('D:D').setNumberFormat('@'); // 訂購人電話
-  sheet.getRange('F:F').setNumberFormat('@'); // 收件人電話
+  sheet.getRange('D:D').setNumberFormat('@'); // 訂購人手機
+  sheet.getRange('F:F').setNumberFormat('@'); // 收件人手機
 
   const qty12A = Number(data.qty12A) || 0;
-  const qty20A = Number(data.qty20A) || 0;
+  const qty15A = Number(data.qty15A) || 0;
   const qty18A = Number(data.qty18A) || 0;
-  const qty20B = Number(data.qty20B) || 0;
+  const qty20A = Number(data.qty20A) || 0;
   const qtyNG = Number(data.qtyNG) || 0;
-  const totalAmount = calculateTotalAmount({ qty12A, qty20A, qty18A, qty20B, qtyNG });
+  const totalAmount = calculateTotalAmount({ qty12A, qty15A, qty18A, qty20A, qtyNG });
 
   sheet.appendRow([
     orderId,
@@ -216,9 +216,9 @@ function writeOrder(orderId, timestamp, data) {
     data.recipientPhone || '',
     data.recipientAddress || '',
     qty12A,
-    qty20A,
+    qty15A,
     qty18A,
-    qty20B,
+    qty20A,
     qtyNG,
     totalAmount,
     data.notes || '',
@@ -242,9 +242,9 @@ function mapOrderRow(row) {
     recipientPhone: row[5],
     recipientAddress: row[6],
     qty12A: Number(row[7]) || 0,
-    qty20A: Number(row[8]) || 0,
+    qty15A: Number(row[8]) || 0,
     qty18A: Number(row[9]) || 0,
-    qty20B: Number(row[10]) || 0,
+    qty20A: Number(row[10]) || 0,
     qtyNG: Number(row[11]) || 0,
     totalAmount: Number(row[12]) || 0,
     notes: row[13] || '',

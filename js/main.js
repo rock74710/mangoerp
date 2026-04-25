@@ -4,13 +4,13 @@ const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzoTvbFiqTpkzjF
 // ===== 工具函式 =====
 
 function $(id) { return document.getElementById(id); }
-const QTY_FIELDS = ['qty12A', 'qty20A', 'qty18A', 'qty20B', 'qtyNG'];
+const QTY_FIELDS = ['qty12A', 'qty15A', 'qty18A', 'qty20A', 'qtyNG'];
 const PRODUCT_CONFIG = [
-  { key: 'qty12A', name: '芒果 12A', price: 1000 },
-  { key: 'qty20A', name: '芒果 20A', price: 1150 },
-  { key: 'qty18A', name: '18A', price: 800 },
-  { key: 'qty20B', name: '20A', price: 700 },
-  { key: 'qtyNG', name: 'NG', price: 600 }
+  { key: 'qty12A', name: '12A', price: 1200 },
+  { key: 'qty15A', name: '15A', price: 1050 },
+  { key: 'qty18A', name: '18A', price: 950 },
+  { key: 'qty20A', name: '20A', price: 850 },
+  { key: 'qtyNG', name: 'NG', price: 700 }
 ];
 
 function showError(fieldId, msg) {
@@ -29,6 +29,15 @@ function clearError(fieldId) {
 
 function validatePhone(phone) {
   return /^09\d{8}$/.test(phone.replace(/[-\s]/g, ''));
+}
+
+function normalizeMobileInput(fieldId) {
+  const el = $(fieldId);
+  if (!el) return;
+  el.addEventListener('input', () => {
+    const value = el.value.replace(/\D/g, '').slice(0, 10);
+    el.value = value;
+  });
 }
 
 // ===== 地址下拉輔助函式 =====
@@ -92,6 +101,8 @@ function initFormPage() {
     const el = $(id);
     if (el) el.addEventListener('input', () => clearError(id));
   });
+  normalizeMobileInput('buyerPhone');
+  normalizeMobileInput('recipientPhone');
 
   form.addEventListener('submit', e => {
     e.preventDefault();
@@ -113,13 +124,13 @@ function validateForm() {
     valid = false;
   } else clearError('buyerName');
 
-  // 訂購人電話（必填）
+  // 訂購人手機（必填）
   const buyerPhone = $('buyerPhone').value.trim();
   if (!buyerPhone) {
-    showError('buyerPhone', '請填寫訂購人電話');
+    showError('buyerPhone', '請填寫訂購人手機');
     valid = false;
   } else if (!validatePhone(buyerPhone)) {
-    showError('buyerPhone', '電話格式不正確（例：0912345678）');
+    showError('buyerPhone', '手機格式不正確（需 09 開頭且 10 碼）');
     valid = false;
   } else clearError('buyerPhone');
 
@@ -130,13 +141,13 @@ function validateForm() {
     valid = false;
   } else clearError('recipientName');
 
-  // 收件人電話（必填）
+  // 收件人手機（必填）
   const recipientPhone = $('recipientPhone').value.trim();
   if (!recipientPhone) {
-    showError('recipientPhone', '請填寫收件人電話');
+    showError('recipientPhone', '請填寫收件人手機');
     valid = false;
   } else if (!validatePhone(recipientPhone)) {
-    showError('recipientPhone', '電話格式不正確（例：0912345678）');
+    showError('recipientPhone', '手機格式不正確（需 09 開頭且 10 碼）');
     valid = false;
   } else clearError('recipientPhone');
 
@@ -194,9 +205,9 @@ function collectFormData() {
     recipientPostcode: postcode,
     recipientDetail: detail,
     qty12A: Number($('qty12A').value) || 0,
+    qty15A: Number($('qty15A').value) || 0,
     qty20A: Number($('qty20A').value) || 0,
     qty18A: Number($('qty18A').value) || 0,
-    qty20B: Number($('qty20B').value) || 0,
     qtyNG: Number($('qtyNG').value) || 0,
     notes: $('notes').value.trim()
   };
@@ -227,9 +238,9 @@ function initConfirmPage() {
 function renderSummary(data) {
   const rows = [
     ['訂購人姓名', data.buyerName || '（未填寫）'],
-    ['訂購人電話', data.buyerPhone || '（未填寫）'],
+    ['訂購人手機', data.buyerPhone || '（未填寫）'],
     ['收件人姓名', data.recipientName],
-    ['收件人電話', data.recipientPhone],
+    ['收件人手機', data.recipientPhone],
     ['收件人地址', data.recipientAddress],
     ['備註', data.notes || '（無）'],
   ];
@@ -243,9 +254,9 @@ function renderSummary(data) {
 
   $('summary-info').innerHTML = infoHTML;
   $('qty12A-display').textContent = data.qty12A;
+  $('qty15A-display').textContent = data.qty15A || 0;
   $('qty20A-display').textContent = data.qty20A;
   $('qty18A-display').textContent = data.qty18A || 0;
-  $('qty20B-display').textContent = data.qty20B || 0;
   $('qtyNG-display').textContent = data.qtyNG || 0;
 
   renderAmountSummary(data);

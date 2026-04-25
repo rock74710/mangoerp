@@ -76,10 +76,10 @@
 
         <div class="field">
           <label for="buyerPhone">
-            訂購人電話
+            訂購人手機
             <span class="required">*</span>
           </label>
-          <input type="tel" id="buyerPhone" placeholder="例：0912345678" autocomplete="tel" inputmode="tel" required>
+          <input type="tel" id="buyerPhone" placeholder="例：0912345678" autocomplete="tel" inputmode="tel" maxlength="10" required>
           <div class="error-msg" id="buyerPhone-err"></div>
         </div>
       </div>
@@ -99,10 +99,10 @@
 
         <div class="field">
           <label for="recipientPhone">
-            收件人電話
+            收件人手機
             <span class="required">*</span>
           </label>
-          <input type="tel" id="recipientPhone" placeholder="例：0912345678" autocomplete="shipping tel" inputmode="tel" required>
+          <input type="tel" id="recipientPhone" placeholder="例：0912345678" autocomplete="shipping tel" inputmode="tel" maxlength="10" required>
           <div class="error-msg" id="recipientPhone-err"></div>
         </div>
 
@@ -136,28 +136,28 @@
 
         <div class="qty-grid">
           <div class="qty-field">
-            <label for="qty12A">芒果 12A-1000元/箱</label>
+            <label for="qty12A">12A-1200元/箱</label>
             <input type="number" id="qty12A" value="0" min="0" max="20" inputmode="numeric">
             <div class="qty-hint">箱</div>
             <div class="error-msg" id="qty12A-err"></div>
           </div>
           <div class="qty-field">
-            <label for="qty20A">芒果 20A-1150元/箱</label>
-            <input type="number" id="qty20A" value="0" min="0" max="20" inputmode="numeric">
+            <label for="qty15A">15A-1050元/箱</label>
+            <input type="number" id="qty15A" value="0" min="0" max="20" inputmode="numeric">
             <div class="qty-hint">箱</div>
           </div>
           <div class="qty-field">
-            <label for="qty18A">18A-800元/箱</label>
+            <label for="qty18A">18A-950元/箱</label>
             <input type="number" id="qty18A" value="0" min="0" max="20" inputmode="numeric">
             <div class="qty-hint">箱</div>
           </div>
           <div class="qty-field">
-            <label for="qty20B">20A-700元/箱</label>
-            <input type="number" id="qty20B" value="0" min="0" max="20" inputmode="numeric">
+            <label for="qty20A">20A-850元/箱</label>
+            <input type="number" id="qty20A" value="0" min="0" max="20" inputmode="numeric">
             <div class="qty-hint">箱</div>
           </div>
           <div class="qty-field">
-            <label for="qtyNG">NG-600元/箱</label>
+            <label for="qtyNG">NG-700元/箱 (大小隨機，約略15~20顆，以重量為準)</label>
             <input type="number" id="qtyNG" value="0" min="0" max="20" inputmode="numeric">
             <div class="qty-hint">箱</div>
           </div>
