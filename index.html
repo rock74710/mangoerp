@@ -83,11 +83,19 @@
         </div>
 
         <div class="field">
-          <label for="recipientAddress">
-            收件地址
-            <span class="required">*</span>
-          </label>
-          <input type="text" id="recipientAddress" placeholder="請輸入完整地址（含縣市）" autocomplete="shipping street-address" required>
+          <label>收件地址 <span class="required">*</span></label>
+          <div class="address-row">
+            <select id="recipientCounty" required>
+              <option value="">請選擇縣市</option>
+            </select>
+            <select id="recipientDistrict" disabled required>
+              <option value="">請選擇區/市</option>
+            </select>
+          </div>
+          <div class="address-postcode-row">
+            <input type="text" id="recipientPostcode" readonly placeholder="郵遞區號" class="postcode-field">
+            <input type="text" id="recipientDetail" placeholder="路、段、號、樓" autocomplete="shipping address-line2" required>
+          </div>
           <div class="error-msg" id="recipientAddress-err"></div>
         </div>
       </div>
@@ -127,6 +135,7 @@
     </form>
   </div>
 
+  <script src="js/taiwan-districts.js"></script>
   <script src="js/main.js"></script>
 </body>
 </html>

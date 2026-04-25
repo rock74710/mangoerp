@@ -23,25 +23,64 @@ function validatePhone(phone) {
   return /^09\d{8}$/.test(phone.replace(/[-\s]/g, ''));
 }
 
+// ===== 地址下拉輔助函式 =====
+
+function updateDistrictDropdown() {
+  const county = $('recipientCounty').value;
+  const el = $('recipientDistrict');
+  el.innerHTML = '<option value="">請選擇區/市</option>';
+  $('recipientPostcode').value = '';
+  if (!county) { el.disabled = true; return; }
+  el.disabled = false;
+  Object.keys(TAIWAN_DISTRICTS[county]).forEach(dist => {
+    el.appendChild(Object.assign(document.createElement('option'), { value: dist, textContent: dist }));
+  });
+}
+
+function updatePostcode() {
+  const c = $('recipientCounty').value;
+  const d = $('recipientDistrict').value;
+  $('recipientPostcode').value = (c && d && TAIWAN_DISTRICTS[c]) ? (TAIWAN_DISTRICTS[c][d] || '') : '';
+}
+
 // ===== 表單頁（index.html）=====
 
 function initFormPage() {
   const form = $('order-form');
   if (!form) return;
 
+  // 初始化縣市下拉
+  const countyEl = $('recipientCounty');
+  Object.keys(TAIWAN_DISTRICTS).forEach(county => {
+    countyEl.appendChild(Object.assign(document.createElement('option'), { value: county, textContent: county }));
+  });
+  countyEl.addEventListener('change', () => { updateDistrictDropdown(); clearError('recipientAddress'); });
+  $('recipientDistrict').addEventListener('change', () => { updatePostcode(); clearError('recipientAddress'); });
+  $('recipientDetail').addEventListener('input', () => clearError('recipientAddress'));
+
   // 若有暫存資料（返回修改），還原填寫內容
   const saved = sessionStorage.getItem('orderData');
   if (saved) {
     const data = JSON.parse(saved);
-    const fields = ['buyerName','buyerPhone','recipientName','recipientPhone','recipientAddress','qty12A','qty20A','notes'];
+    const fields = ['buyerName','buyerPhone','recipientName','recipientPhone','qty12A','qty20A','notes'];
     fields.forEach(key => {
       const el = $(key);
       if (el && data[key] !== undefined) el.value = data[key];
     });
+    // 還原地址三段
+    if (data.recipientCounty) {
+      countyEl.value = data.recipientCounty;
+      updateDistrictDropdown();
+      if (data.recipientDistrict) {
+        $('recipientDistrict').value = data.recipientDistrict;
+        updatePostcode();
+      }
+    }
+    if (data.recipientDetail) $('recipientDetail').value = data.recipientDetail;
   }
 
   // 即時清除錯誤
-  ['buyerName','buyerPhone','recipientName','recipientPhone','recipientAddress'].forEach(id => {
+  ['buyerName','buyerPhone','recipientName','recipientPhone'].forEach(id => {
     const el = $(id);
     if (el) el.addEventListener('input', () => clearError(id));
   });
@@ -93,12 +132,20 @@ function validateForm() {
     valid = false;
   } else clearError('recipientPhone');
 
-  // 收件人地址（必填）
-  const address = $('recipientAddress').value.trim();
-  if (!address) {
-    showError('recipientAddress', '請填寫收件地址');
+  // 收件地址（縣市 + 區 + 詳細地址，三者皆必填）
+  const county = $('recipientCounty').value;
+  const district = $('recipientDistrict').value;
+  const detail = $('recipientDetail').value.trim();
+  if (!county || !district || !detail) {
+    showError('recipientAddress', '請選擇縣市／區，並填寫詳細地址');
+    if (!county) $('recipientCounty').classList.add('error');
+    else if (!district) $('recipientDistrict').classList.add('error');
     valid = false;
-  } else clearError('recipientAddress');
+  } else {
+    clearError('recipientAddress');
+    $('recipientCounty').classList.remove('error');
+    $('recipientDistrict').classList.remove('error');
+  }
 
   // 至少選一種芒果
   const qty12A = Number($('qty12A').value) || 0;
@@ -110,7 +157,7 @@ function validateForm() {
 
   if (!valid) {
     // 捲動到第一個錯誤欄位
-    const firstErr = document.querySelector('.field input.error, .field textarea.error');
+    const firstErr = document.querySelector('.field input.error, .field textarea.error, .field select.error');
     if (firstErr) firstErr.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
 
@@ -118,12 +165,20 @@ function validateForm() {
 }
 
 function collectFormData() {
+  const county = $('recipientCounty').value;
+  const district = $('recipientDistrict').value;
+  const postcode = $('recipientPostcode').value;
+  const detail = $('recipientDetail').value.trim();
   return {
     buyerName: $('buyerName').value.trim(),
     buyerPhone: $('buyerPhone').value.trim(),
     recipientName: $('recipientName').value.trim(),
     recipientPhone: $('recipientPhone').value.trim(),
-    recipientAddress: $('recipientAddress').value.trim(),
+    recipientAddress: [postcode, county + district, detail].filter(Boolean).join(' '),
+    recipientCounty: county,
+    recipientDistrict: district,
+    recipientPostcode: postcode,
+    recipientDetail: detail,
     qty12A: Number($('qty12A').value) || 0,
     qty20A: Number($('qty20A').value) || 0,
     notes: $('notes').value.trim()
