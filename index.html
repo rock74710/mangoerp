@@ -44,17 +44,18 @@
         <div class="field">
           <label for="buyerName">
             訂購人姓名
-            <span class="optional">（選填）</span>
+            <span class="required">*</span>
           </label>
-          <input type="text" id="buyerName" placeholder="請輸入姓名" autocomplete="name">
+          <input type="text" id="buyerName" placeholder="請輸入姓名" autocomplete="name" required>
+          <div class="error-msg" id="buyerName-err"></div>
         </div>
 
         <div class="field">
           <label for="buyerPhone">
             訂購人電話
-            <span class="optional">（選填）</span>
+            <span class="required">*</span>
           </label>
-          <input type="tel" id="buyerPhone" placeholder="例：0912345678" autocomplete="tel" inputmode="tel">
+          <input type="tel" id="buyerPhone" placeholder="例：0912345678" autocomplete="tel" inputmode="tel" required>
           <div class="error-msg" id="buyerPhone-err"></div>
         </div>
       </div>

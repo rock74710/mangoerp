@@ -41,7 +41,7 @@ function initFormPage() {
   }
 
   // 即時清除錯誤
-  ['buyerPhone','recipientName','recipientPhone','recipientAddress'].forEach(id => {
+  ['buyerName','buyerPhone','recipientName','recipientPhone','recipientAddress'].forEach(id => {
     const el = $(id);
     if (el) el.addEventListener('input', () => clearError(id));
   });
@@ -59,19 +59,29 @@ function initFormPage() {
 function validateForm() {
   let valid = true;
 
+  // 訂購人姓名（必填）
+  const buyerName = $('buyerName').value.trim();
+  if (!buyerName) {
+    showError('buyerName', '請填寫訂購人姓名');
+    valid = false;
+  } else clearError('buyerName');
+
+  // 訂購人電話（必填）
+  const buyerPhone = $('buyerPhone').value.trim();
+  if (!buyerPhone) {
+    showError('buyerPhone', '請填寫訂購人電話');
+    valid = false;
+  } else if (!validatePhone(buyerPhone)) {
+    showError('buyerPhone', '電話格式不正確（例：0912345678）');
+    valid = false;
+  } else clearError('buyerPhone');
+
   // 收件人姓名（必填）
   const recipientName = $('recipientName').value.trim();
   if (!recipientName) {
     showError('recipientName', '請填寫收件人姓名');
     valid = false;
   } else clearError('recipientName');
-
-  // 訂購人電話（選填但若填了要格式正確）
-  const buyerPhone = $('buyerPhone').value.trim();
-  if (buyerPhone && !validatePhone(buyerPhone)) {
-    showError('buyerPhone', '電話格式不正確（例：0912345678）');
-    valid = false;
-  } else clearError('buyerPhone');
 
   // 收件人電話（必填）
   const recipientPhone = $('recipientPhone').value.trim();
