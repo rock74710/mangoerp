@@ -559,6 +559,83 @@ body {
   font-size: 0.95rem !important;
 }
 
+/* ===== 訂購需知標題 ===== */
+.info-note strong {
+  color: var(--text);
+  display: block;
+  margin-top: 10px;
+  margin-bottom: 2px;
+}
+
+.info-note strong:first-child {
+  margin-top: 0;
+}
+
+/* ===== 匯款資訊（Confirm Page）===== */
+.payment-info {
+  margin-bottom: 16px;
+}
+
+.payment-row {
+  display: flex;
+  align-items: baseline;
+  padding: 7px 0;
+  border-bottom: 1px solid #F0F0F0;
+  font-size: 0.88rem;
+}
+
+.payment-row:last-child {
+  border-bottom: none;
+}
+
+.payment-label {
+  color: var(--text-light);
+  min-width: 80px;
+  flex-shrink: 0;
+}
+
+.payment-value {
+  color: var(--text);
+  font-weight: 500;
+}
+
+.account-no {
+  font-family: monospace;
+  letter-spacing: 0.06em;
+  font-size: 1rem;
+}
+
+.payment-amount-row .payment-label,
+.payment-amount-row .payment-value {
+  color: var(--mango-dark);
+  font-weight: 700;
+  font-size: 1.05rem;
+}
+
+.payment-digits-field {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px dashed var(--mango-border);
+  margin-bottom: 0;
+}
+
+.payment-line-hint {
+  margin-top: 14px;
+  font-size: 0.82rem;
+  color: var(--text-light);
+  text-align: center;
+}
+
+.line-link {
+  color: #00B900;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.line-link:hover {
+  text-decoration: underline;
+}
+
 /* ===== Responsive ===== */
 @media (min-width: 480px) {
   .container {

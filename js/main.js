@@ -6,10 +6,10 @@ const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzoTvbFiqTpkzjF
 function $(id) { return document.getElementById(id); }
 const QTY_FIELDS = ['qty12A', 'qty15A', 'qty18A', 'qty20A', 'qtyNG'];
 const PRODUCT_CONFIG = [
-  { key: 'qty12A', name: '12A', price: 1200 },
-  { key: 'qty15A', name: '15A', price: 1050 },
-  { key: 'qty18A', name: '18A', price: 950 },
-  { key: 'qty20A', name: '20A', price: 850 },
+  { key: 'qty12A', name: '12A', price: 1300 },
+  { key: 'qty15A', name: '15A', price: 1150 },
+  { key: 'qty18A', name: '18A', price: 1050 },
+  { key: 'qty20A', name: '20A', price: 950 },
   { key: 'qtyNG', name: 'NG', price: 700 }
 ];
 
@@ -232,7 +232,11 @@ function initConfirmPage() {
     window.location.href = 'index.html';
   });
 
-  $('btn-confirm').addEventListener('click', () => submitOrder(data));
+  $('btn-confirm').addEventListener('click', () => {
+    const digitsEl = $('transferDigits');
+    const transferDigits = digitsEl ? digitsEl.value.trim() : '';
+    submitOrder({ ...data, transferDigits });
+  });
 }
 
 function renderSummary(data) {
@@ -288,6 +292,10 @@ function renderAmountSummary(data) {
       </div>
     </div>
   `;
+
+  // 同步更新匯款資訊卡的應付金額
+  const paymentTotal = $('payment-total');
+  if (paymentTotal) paymentTotal.textContent = `${total.toLocaleString()} 元`;
 }
 
 async function submitOrder(data) {

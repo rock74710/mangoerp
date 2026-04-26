@@ -36,22 +36,22 @@
       <div class="card-title">🥭 訂購數量</div>
       <div class="summary-qty">
         <div class="qty-badge">
-          <div class="qty-type">12A-1200元/箱</div>
+          <div class="qty-type">12A-1300元/箱</div>
           <div class="qty-num" id="qty12A-display">0</div>
           <div class="qty-unit">箱</div>
         </div>
         <div class="qty-badge">
-          <div class="qty-type">15A-1050元/箱</div>
+          <div class="qty-type">15A-1150元/箱</div>
           <div class="qty-num" id="qty15A-display">0</div>
           <div class="qty-unit">箱</div>
         </div>
         <div class="qty-badge">
-          <div class="qty-type">18A-950元/箱</div>
+          <div class="qty-type">18A-1050元/箱</div>
           <div class="qty-num" id="qty18A-display">0</div>
           <div class="qty-unit">箱</div>
         </div>
         <div class="qty-badge">
-          <div class="qty-type">20A-850元/箱</div>
+          <div class="qty-type">20A-950元/箱</div>
           <div class="qty-num" id="qty20A-display">0</div>
           <div class="qty-unit">箱</div>
         </div>
@@ -68,6 +68,37 @@
     <div class="card">
       <div class="card-title">📋 訂單資訊</div>
       <div id="summary-info"></div>
+    </div>
+
+    <!-- 匯款資訊 -->
+    <div class="card">
+      <div class="card-title">💳 匯款資訊</div>
+      <div class="payment-info">
+        <div class="payment-row">
+          <span class="payment-label">銀行</span>
+          <span class="payment-value">合作金庫 006</span>
+        </div>
+        <div class="payment-row">
+          <span class="payment-label">帳號</span>
+          <span class="payment-value account-no">5838872183312</span>
+        </div>
+        <div class="payment-row">
+          <span class="payment-label">戶名</span>
+          <span class="payment-value">柯森陽</span>
+        </div>
+        <div class="payment-row payment-amount-row">
+          <span class="payment-label">應付金額</span>
+          <span class="payment-value" id="payment-total">—</span>
+        </div>
+      </div>
+      <div class="field payment-digits-field">
+        <label for="transferDigits">匯款末五碼 <span class="optional">（選填）</span></label>
+        <input type="text" id="transferDigits" placeholder="請填入您的匯款末五碼" inputmode="numeric" maxlength="5">
+        <div class="field-note">填寫後方便我們核對匯款，加速處理訂單</div>
+      </div>
+      <div class="payment-line-hint">
+        如有任何問題，歡迎透過 <a href="https://line.me/R/ti/p/@220cqjqs" target="_blank" rel="noopener" class="line-link">LINE 聯絡我們 🟢</a>
+      </div>
     </div>
 
     <div class="notice">

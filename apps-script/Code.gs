@@ -3,10 +3,10 @@ const SHEET_ID = 'YOUR_GOOGLE_SHEET_ID'; // ← 替換成你的 Google Sheets ID
 const ORDER_SHEET = '訂單資料';
 const TCAT_SHEET = '黑貓格式';
 const PRODUCT_ITEMS = [
-  { key: 'qty12A', name: '12A', price: 1200 },
-  { key: 'qty15A', name: '15A', price: 1050 },
-  { key: 'qty18A', name: '18A', price: 950 },
-  { key: 'qty20A', name: '20A', price: 850 },
+  { key: 'qty12A', name: '12A', price: 1300 },
+  { key: 'qty15A', name: '15A', price: 1150 },
+  { key: 'qty18A', name: '18A', price: 1050 },
+  { key: 'qty20A', name: '20A', price: 950 },
   { key: 'qtyNG', name: 'NG', price: 700 }
 ];
 const ORDER_HEADERS = [
