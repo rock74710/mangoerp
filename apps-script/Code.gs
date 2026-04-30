@@ -136,7 +136,7 @@ function onOpen() {
 // ===== 接收訂單（前端 POST 過來）=====
 function doPost(e) {
   try {
-    const data = JSON.parse(e.postData.contents);
+    const data = parseRequestData_(e);
     const orderId = generateOrderId();
     const timestamp = Utilities.formatDate(new Date(), 'Asia/Taipei', 'yyyy/MM/dd HH:mm:ss');
 
@@ -150,6 +150,35 @@ function doPost(e) {
       .createTextOutput(JSON.stringify({ success: false, error: err.message }))
       .setMimeType(ContentService.MimeType.JSON);
   }
+}
+
+function parseRequestData_(e) {
+  const contents = e && e.postData && typeof e.postData.contents === 'string'
+    ? e.postData.contents
+    : '';
+
+  if (!contents) {
+    return {};
+  }
+
+  // 1) 直接 JSON：{"buyerName":"..."}
+  try {
+    return JSON.parse(contents);
+  } catch (err) {
+    // 繼續嘗試其他格式
+  }
+
+  // 2) x-www-form-urlencoded：payload={...JSON...}
+  const payload = e && e.parameter && e.parameter.payload ? e.parameter.payload : '';
+  if (payload) {
+    try {
+      return JSON.parse(payload);
+    } catch (err) {
+      throw new Error('payload JSON 格式錯誤');
+    }
+  }
+
+  throw new Error('無法解析請求內容');
 }
 
 // ===== 後台 API：回傳訂單列表（admin.html 用）=====
@@ -227,7 +256,7 @@ function writeOrder(orderId, timestamp, data) {
     totalAmount,
     data.notes || '',
     '待處理',
-    data.transferDigits || ''
+    String(data.transferDigits || '')
   ]]);
 }
 
