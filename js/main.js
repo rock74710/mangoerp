@@ -234,10 +234,7 @@ function initConfirmPage() {
 
   $('btn-confirm').addEventListener('click', () => {
     const digitsEl = $('transferDigits');
-    const transferDigits = digitsEl
-      ? digitsEl.value.replace(/\D/g, '').slice(0, 5)
-      : '';
-    if (digitsEl) digitsEl.value = transferDigits;
+    const transferDigits = digitsEl ? digitsEl.value.trim() : '';
     submitOrder({ ...data, transferDigits });
   });
 }
@@ -310,15 +307,14 @@ async function submitOrder(data) {
   alert.classList.remove('show');
 
   try {
-    // Apps Script Web App 在跨網域下建議用 no-cors + form-urlencoded。
-    // 以 payload 包住 JSON，後端可從 e.parameter.payload 解析。
-    const formBody = new URLSearchParams();
-    formBody.set('payload', JSON.stringify(data));
-
+    // Apps Script doPost 需要特殊處理 CORS：使用 no-cors 模式
+    // no-cors 下無法讀取 response，所以改用帶 redirect 的方式
+    // 若 Apps Script 設定允許，可改用標準 fetch
     await fetch(APPS_SCRIPT_URL, {
       method: 'POST',
       mode: 'no-cors',
-      body: formBody.toString()
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
     });
 
     // no-cors 模式下拿不到 response，視為成功
