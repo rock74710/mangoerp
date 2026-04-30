@@ -13,7 +13,7 @@ const ORDER_HEADERS = [
   '訂單編號', '時間戳', '訂購人姓名', '訂購人手機',
   '收件人姓名', '收件人手機', '收件人地址',
   '12A數量', '15A數量', '18A數量', '20A數量', 'NG數量',
-  '總金額', '備註', '狀態'
+  '總金額', '備註', '狀態', '匯款末五碼'
 ];
 
 // ===== 【第一次使用必跑】初始化整個 Sheets 結構 =====
@@ -196,10 +196,6 @@ function writeOrder(orderId, timestamp, data) {
   const sheet = ss.getSheetByName(ORDER_SHEET);
   ensureOrderSheetSchema(sheet);
 
-  // 必須在 appendRow 之前設定，否則數字會先被寫入再格式化（首位 0 已丟失）
-  sheet.getRange('D:D').setNumberFormat('@'); // 訂購人手機
-  sheet.getRange('F:F').setNumberFormat('@'); // 收件人手機
-
   const qty12A = Number(data.qty12A) || 0;
   const qty15A = Number(data.qty15A) || 0;
   const qty18A = Number(data.qty18A) || 0;
@@ -207,13 +203,21 @@ function writeOrder(orderId, timestamp, data) {
   const qtyNG = Number(data.qtyNG) || 0;
   const totalAmount = calculateTotalAmount({ qty12A, qty15A, qty18A, qty20A, qtyNG });
 
-  sheet.appendRow([
+  const nextRow = sheet.getLastRow() + 1;
+
+  // appendRow 會忽略欄位格式直接轉數字，改用 setValues
+  // 先對該行的電話欄位設純文字格式，flush 確保生效後再寫入
+  sheet.getRange(nextRow, 4).setNumberFormat('@'); // 訂購人手機
+  sheet.getRange(nextRow, 6).setNumberFormat('@'); // 收件人手機
+  SpreadsheetApp.flush();
+
+  sheet.getRange(nextRow, 1, 1, ORDER_HEADERS.length).setValues([[
     orderId,
     timestamp,
     data.buyerName || '',
-    data.buyerPhone || '',
+    String(data.buyerPhone || ''),
     data.recipientName || '',
-    data.recipientPhone || '',
+    String(data.recipientPhone || ''),
     data.recipientAddress || '',
     qty12A,
     qty15A,
@@ -222,8 +226,9 @@ function writeOrder(orderId, timestamp, data) {
     qtyNG,
     totalAmount,
     data.notes || '',
-    '待處理'
-  ]);
+    '待處理',
+    data.transferDigits || ''
+  ]]);
 }
 
 function calculateTotalAmount(data) {
@@ -248,6 +253,7 @@ function mapOrderRow(row) {
     qtyNG: Number(row[11]) || 0,
     totalAmount: Number(row[12]) || 0,
     notes: row[13] || '',
-    status: row[14] || '待處理'
+    status: row[14] || '待處理',
+    transferDigits: row[15] || ''
   };
 }
