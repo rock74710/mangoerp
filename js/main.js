@@ -234,8 +234,7 @@ function initConfirmPage() {
 
   $('btn-confirm').addEventListener('click', () => {
     const digitsEl = $('transferDigits');
-    const transferDigits = digitsEl ? digitsEl.value.replace(/\D/g, '').slice(0, 5) : '';
-    if (digitsEl) digitsEl.value = transferDigits;
+    const transferDigits = digitsEl ? digitsEl.value.trim() : '';
     submitOrder({ ...data, transferDigits });
   });
 }
@@ -308,11 +307,13 @@ async function submitOrder(data) {
   alert.classList.remove('show');
 
   try {
-    // no-cors 下用 text/plain 可避免額外 preflight，Apps Script 仍可讀取 JSON 字串
+    // Apps Script doPost 需要特殊處理 CORS：使用 no-cors 模式
+    // no-cors 下無法讀取 response，所以改用帶 redirect 的方式
+    // 若 Apps Script 設定允許，可改用標準 fetch
     await fetch(APPS_SCRIPT_URL, {
       method: 'POST',
       mode: 'no-cors',
-      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data)
     });
 
