@@ -205,10 +205,9 @@ function writeOrder(orderId, timestamp, data) {
 
   const nextRow = sheet.getLastRow() + 1;
 
-  // appendRow 會忽略欄位格式直接轉數字，改用 setValues
-  // 先對該行的電話欄位設純文字格式，flush 確保生效後再寫入
-  sheet.getRange(nextRow, 4).setNumberFormat('@'); // 訂購人手機
-  sheet.getRange(nextRow, 6).setNumberFormat('@'); // 收件人手機
+  // 設定整欄為純文字格式（整欄優先權高於單格，確保 setValues 不自動轉型）
+  sheet.getRange('D:D').setNumberFormat('@'); // 訂購人手機
+  sheet.getRange('F:F').setNumberFormat('@'); // 收件人手機
   SpreadsheetApp.flush();
 
   sheet.getRange(nextRow, 1, 1, ORDER_HEADERS.length).setValues([[
