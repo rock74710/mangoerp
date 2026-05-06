@@ -107,24 +107,37 @@ function refreshTcatSheet() {
 
   orders.forEach(row => {
     const order = mapOrderRow(row);
+
+    // 把所有品項攤平成箱子清單（方便混裝打包）
+    const allBoxes = [];
     PRODUCT_ITEMS.forEach(item => {
-      let remaining = Number(order[item.key]) || 0;
-      while (remaining > 0) {
-        const current = Math.min(remaining, MAX_BOXES);
-        tcatRows.push([
-          order.orderId,
-          `${SENDER_NAME}(${order.buyerName})`,
-          SENDER_PHONE,
-          order.recipientName,
-          order.recipientPhone,
-          order.recipientAddress,
-          `${item.name} x${current}`,
-          1,
-          order.notes
-        ]);
-        remaining -= current;
-      }
+      const qty = Number(order[item.key]) || 0;
+      for (let i = 0; i < qty; i++) allBoxes.push(item.name);
     });
+
+    // 每 MAX_BOXES 箱打包成一張出貨單
+    for (let i = 0; i < allBoxes.length; i += MAX_BOXES) {
+      const batch = allBoxes.slice(i, i + MAX_BOXES);
+
+      // 統計這批的品名與數量，產生如「12A x1 / 15A x1」格式
+      const counts = {};
+      batch.forEach(name => { counts[name] = (counts[name] || 0) + 1; });
+      const productName = Object.entries(counts)
+        .map(([name, cnt]) => `${name} x${cnt}`)
+        .join(' / ');
+
+      tcatRows.push([
+        order.orderId,
+        `${SENDER_NAME}(${order.buyerName})`,
+        SENDER_PHONE,
+        order.recipientName,
+        order.recipientPhone,
+        order.recipientAddress,
+        productName,
+        1,
+        order.notes
+      ]);
+    }
   });
 
   if (tcatRows.length > 0) {
