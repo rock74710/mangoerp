@@ -1,5 +1,5 @@
 // ===== 設定區 =====
-const SHEET_ID = 'YOUR_GOOGLE_SHEET_ID'; // ← 替換成你的 Google Sheets ID
+const SHEET_ID = '1ur1Z4X0qMI_bgp1plzccoZd5XCqOgfilYhSw_hcRQAw'; // ← 替換成你的 Google Sheets ID
 const ORDER_SHEET = '訂單資料';
 const TCAT_SHEET = '黑貓格式';
 const SENDER_NAME = '芒果姐姐果園'; // 寄件人前綴，後面會加上訂購人姓名
@@ -95,6 +95,17 @@ function refreshTcatSheet() {
     Logger.log('目前沒有訂單資料');
     return;
   }
+
+  // 強制更新標頭（確保欄位名稱與欄數正確）
+  const tcatHeaders = [
+    '訂單編號', '寄件人', '寄件人手機', '收件人', '收件人手機', '收件人地址', '品名', '希望配達', '備註'
+  ];
+  tcatSheet.getRange(1, 1, 1, tcatHeaders.length).setValues([tcatHeaders]);
+
+  // 設定手機欄位為純文字，防止首位 0 被去掉
+  tcatSheet.getRange('C:C').setNumberFormat('@'); // 寄件人手機
+  tcatSheet.getRange('E:E').setNumberFormat('@'); // 收件人手機
+  SpreadsheetApp.flush();
 
   // 清除舊資料（保留標頭）
   if (tcatSheet.getLastRow() > 1) {
