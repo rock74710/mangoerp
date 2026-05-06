@@ -2,7 +2,7 @@
 const SHEET_ID = 'YOUR_GOOGLE_SHEET_ID'; // ← 替換成你的 Google Sheets ID
 const ORDER_SHEET = '訂單資料';
 const TCAT_SHEET = '黑貓格式';
-const SENDER_NAME = '芒果姐姐果園(訂購人)';
+const SENDER_NAME = '芒果姐姐果園'; // 寄件人前綴，後面會加上訂購人姓名
 const SENDER_PHONE = '0955253492';
 const MAX_BOXES = 2; // 每次出貨上限箱數
 
@@ -113,7 +113,7 @@ function refreshTcatSheet() {
         const current = Math.min(remaining, MAX_BOXES);
         tcatRows.push([
           order.orderId,
-          SENDER_NAME,
+          `${SENDER_NAME}(${order.buyerName})`,
           SENDER_PHONE,
           order.recipientName,
           order.recipientPhone,
