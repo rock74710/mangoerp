@@ -262,6 +262,9 @@ function writeOrder(orderId, timestamp, data) {
     '待處理',
     data.transferDigits || ''
   ]]);
+
+  // 訂單寫入後自動更新黑貓格式
+  refreshTcatSheet();
 }
 
 function calculateTotalAmount(data) {
