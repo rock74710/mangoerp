@@ -2,6 +2,10 @@
 const SHEET_ID = 'YOUR_GOOGLE_SHEET_ID'; // ← 替換成你的 Google Sheets ID
 const ORDER_SHEET = '訂單資料';
 const TCAT_SHEET = '黑貓格式';
+const SENDER_NAME = '芒果姐姐果園(訂購人)';
+const SENDER_PHONE = '0955253492';
+const MAX_BOXES = 2; // 每次出貨上限箱數
+
 const PRODUCT_ITEMS = [
   { key: 'qty12A', name: '12A', price: 1300 },
   { key: 'qty15A', name: '15A', price: 1150 },
@@ -36,9 +40,11 @@ function setup() {
   // 清除舊內容並重設
   tcatSheet.clearContents();
 
-  // 黑貓宅急便批次匯入標頭（依統一速達官方格式）
+  // 黑貓宅急便批次匯入標頭
   const tcatHeaders = [
-    '收件人', '收件人手機', '收件人地址', '品名', '數量', '寄件人備註', '訂單編號'
+    '訂單編號', '寄件人', '寄件人手機',
+    '收件人', '收件人手機', '收件人地址',
+    '品名', '希望配達', '備註'
   ];
   tcatSheet.getRange(1, 1, 1, tcatHeaders.length).setValues([tcatHeaders]);
 
@@ -92,7 +98,7 @@ function refreshTcatSheet() {
 
   // 清除舊資料（保留標頭）
   if (tcatSheet.getLastRow() > 1) {
-    tcatSheet.getRange(2, 1, tcatSheet.getLastRow() - 1, 7).clearContent();
+    tcatSheet.getRange(2, 1, tcatSheet.getLastRow() - 1, 9).clearContent();
   }
 
   // 讀取所有訂單
@@ -102,23 +108,27 @@ function refreshTcatSheet() {
   orders.forEach(row => {
     const order = mapOrderRow(row);
     PRODUCT_ITEMS.forEach(item => {
-      const qty = Number(order[item.key]) || 0;
-      if (qty > 0) {
+      let remaining = Number(order[item.key]) || 0;
+      while (remaining > 0) {
+        const current = Math.min(remaining, MAX_BOXES);
         tcatRows.push([
+          order.orderId,
+          SENDER_NAME,
+          SENDER_PHONE,
           order.recipientName,
           order.recipientPhone,
           order.recipientAddress,
-          item.name,
-          qty,
-          order.notes,
-          order.orderId
+          `${item.name} x${current}`,
+          1,
+          order.notes
         ]);
+        remaining -= current;
       }
     });
   });
 
   if (tcatRows.length > 0) {
-    tcatSheet.getRange(2, 1, tcatRows.length, 7).setValues(tcatRows);
+    tcatSheet.getRange(2, 1, tcatRows.length, 9).setValues(tcatRows);
   }
 
   Logger.log(`✅ 黑貓格式已更新，共 ${tcatRows.length} 筆出貨記錄`);
