@@ -114,10 +114,12 @@ function refreshTcatSheet() {
 
   // 讀取所有訂單
   const orders = orderSheet.getRange(2, 1, lastRow - 1, ORDER_HEADERS.length).getValues();
-  const tcatRows = [];
+  const paidRows = [];    // 有末五碼 & 未出貨
+  const unpaidRows = [];  // 無末五碼 & 未出貨
 
   orders.forEach(row => {
     const order = mapOrderRow(row);
+    if (order.status === '已出貨') return; // 已出貨 → 完全跳過
 
     // 把所有品項攤平成箱子清單（方便混裝打包）
     const allBoxes = [];
@@ -127,17 +129,15 @@ function refreshTcatSheet() {
     });
 
     // 每 MAX_BOXES 箱打包成一張出貨單
+    const shipRows = [];
     for (let i = 0; i < allBoxes.length; i += MAX_BOXES) {
       const batch = allBoxes.slice(i, i + MAX_BOXES);
-
-      // 統計這批的品名與數量，產生如「12A x1 / 15A x1」格式
       const counts = {};
       batch.forEach(name => { counts[name] = (counts[name] || 0) + 1; });
       const productName = Object.entries(counts)
         .map(([name, cnt]) => `${name} x${cnt}`)
         .join(' / ');
-
-      tcatRows.push([
+      shipRows.push([
         order.orderId,
         `${SENDER_NAME}(${order.buyerName})`,
         SENDER_PHONE,
@@ -149,13 +149,28 @@ function refreshTcatSheet() {
         order.notes
       ]);
     }
+
+    // 依有無末五碼分流
+    if (order.transferDigits) {
+      shipRows.forEach(r => paidRows.push(r));
+    } else {
+      shipRows.forEach(r => unpaidRows.push(r));
+    }
   });
 
-  if (tcatRows.length > 0) {
-    tcatSheet.getRange(2, 1, tcatRows.length, 9).setValues(tcatRows);
+  // 組合：已付款上半段 + 空白分隔列 + 待確認下半段
+  const separator = [['', '', '', '', '', '', '', '', '']];
+  const allRows = [
+    ...paidRows,
+    ...(paidRows.length > 0 && unpaidRows.length > 0 ? separator : []),
+    ...unpaidRows
+  ];
+
+  if (allRows.length > 0) {
+    tcatSheet.getRange(2, 1, allRows.length, 9).setValues(allRows);
   }
 
-  Logger.log(`✅ 黑貓格式已更新，共 ${tcatRows.length} 筆出貨記錄`);
+  Logger.log(`✅ 黑貓格式已更新：已付款 ${paidRows.length} 筆，待確認 ${unpaidRows.length} 筆`);
 }
 
 // ===== 自訂選單 =====
